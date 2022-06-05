@@ -74,8 +74,8 @@ public class Multiplication {
 	/**
 	 * This method sums two (positive) numbers. These are passed as Strings, which is also the return
 	 * type.
-	 * @param num1 first enumerator
-	 * @param num2 second enumerator
+	 * @param num1 first addent
+	 * @param num2 second addent
 	 * @return sum of the parameters
 	 */
 	public static String sumTwoNums(String num1, String num2) {
@@ -131,5 +131,74 @@ public class Multiplication {
 	    
 	    //return string without leading zeros
 	    return result.replaceFirst("^0+(?!$)", "");
+	}
+	
+	/**
+	 * This method returns the num1 subtracted by num2. These numbers are passed as Strings, 
+	 * which is also the return type.
+	 * @param num1 minuend
+	 * @param num2 subtrahend
+	 * @return difference
+	 */
+	public static String diffTwoNums(String num1, String num2) {
+		
+		// first make sure the 1 is the longer one
+		if (num1.length() < num2.length()){
+			String temp = num1;
+			num1 = num2;
+			num2 = temp;
+	    }
+		//determine the lengths of the numbers
+		int n1 = num1.length(), n2 = num2.length();
+				
+		//find the difference in length
+		int diff = n1 - n2;
+				
+		//set the number that gets transfered to the next summation
+		int transfer = 0;
+				
+				
+		//define an empty string
+		String str = "";
+		
+		//start from end and sub the individual numbers
+		//basic difference that we all know from 2nd grade
+		for (int i = n2 - 1; i >=0; i--) {
+					
+			//
+			int sub = (((int)num1.charAt(i + diff) - (int)'0')
+					- ((int)num2.charAt(i) - (int)'0')
+					- transfer);
+			if (sub < 0) {
+            	sub = sub + 10;
+            	transfer = 1;
+        	}
+        	else {
+        		transfer = 0;
+        	}
+
+        	str += (char)(sub + '0');
+		}
+		
+		// sub the rest of the string
+		for (int i = n1 - n2 - 1; i >= 0; i--) {
+            if (num1.charAt(i) == '0' && transfer > 0) {
+                str += "9";
+                continue;
+            }
+            int sub = (((int)num1.charAt(i) - (int)'0') - transfer);
+            
+            if (i > 0 || sub > 0) { // remove preceding 0's
+            	str += (char)(sub + '0');
+            }
+                
+            transfer = 0;
+        }
+		
+		// reverse resultant String
+		String result = new StringBuilder(str).reverse().toString();
+		
+		//return string without leading zeros
+        return result.replaceFirst("^0+(?!$)", "");
 	}
 }
