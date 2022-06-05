@@ -4,6 +4,57 @@ import java.util.Collections;
 
 public class Multiplication {
 	
+	public static void main(String[] args) {
+		
+		System.out.println(multiply("146123", "352120"));
+		
+//		predicted : 51452830760
+//		calculated: 51452830760
+	}
+	
+	public static String multiply(String num1, String num2) {
+		try{
+			//if the first character of the num1 is not minus sign and is not a digit -> throw exception
+			if(num1.charAt(0) != '-' && !Character.isDigit(num1.charAt(0))){
+				throw new NonNumericalValueException();
+			}
+			
+			//if the first character of the num2 is not minus sign and is not a digit -> throw exception
+			if(num2.charAt(0) != '-' && !Character.isDigit(num2.charAt(0))){
+				throw new NonNumericalValueException();
+			}
+			
+			//if one of the chars of num1 from index 1 is not a digit -> throw exception
+			for(char c : num1.substring(1).toCharArray()) {
+				if(!Character.isDigit(c)) throw new NonNumericalValueException();
+			}
+			
+			//if one of the chars of num2 from index 1 is not a digit -> throw exception
+			for(char c : num2.substring(1).toCharArray()) {
+				if(!Character.isDigit(c)) throw new NonNumericalValueException();
+			}
+			
+		}catch(NonNumericalValueException e) {
+			System.out.println("The arguments contain invalid character(s) - non-numerical value");
+			System.exit(1);
+		}
+		
+		boolean positive = true;
+		
+		if(num1.charAt(0) == '-' && num2.charAt(0) == '-') {
+			return karatsuba(num1.substring(1), num2.substring(1));
+		}
+		else if(num1.charAt(0) == '-' && num2.charAt(0) != '-') {
+			return "-"+karatsuba(num1.substring(1), num2);
+		}
+		else if(num1.charAt(0) != '-' && num2.charAt(0) == '-') {
+			return "-"+karatsuba(num1, num2.substring(1));
+		}
+		else {
+			return karatsuba(num1, num2);
+		}
+		
+	}
 	
 	/**
 	 * Recursive method that takes two integer numbers (any number of digits) and returns the product
