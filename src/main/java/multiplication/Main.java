@@ -14,7 +14,7 @@ public class Main {
 				System.out.println("Invalid first argument (valid options are: alg1, alg2)");
 			}
 		}catch(ArrayIndexOutOfBoundsException e) {
-			System.out.println("Inssuficient number of arguments");
+			System.out.println("Insufficient number of arguments");
 			System.exit(1);
 		}
 		

@@ -3,16 +3,18 @@ package multiplication;
 import java.util.ArrayList;
 import java.util.Collections;
 
+
 public class Multiplication {
-	
-//	public static void main(String[] args) {
-//		
-//		System.out.println(multiply("123", "10000"));
-//		
-////		predicted : 51452830760
-////		calculated: 51452830760
-//	}
-	
+
+	/**
+	 * This method first checks if the parameters are valid and then calls the karatsuba() method,
+	 * which returns the result of multiplication of the two numbers. The type of parameters as well as
+	 * the return type is String.
+	 *
+	 * @param num1 number 1 to be multiplied by the number 2
+	 * @param num2 number 2 to multiply the number 2
+	 * @return the result of multiplication of the two numbers
+	 */
 	public static String multiply(String num1, String num2) {
 		try{
 			//if the first character of the num1 is not minus sign and is not a digit -> throw exception
@@ -76,18 +78,13 @@ public class Multiplication {
 		 * separate karatsuba multiplication on these parts
 		*/
 		if(num1.length() > num2.length()) {
-//			result = chunkify(num1, num2);
-//			System.out.println("chunk: "+result);
 			return chunkify(num1, num2);
 			
 		}
 		else if(num2.length() > num1.length()) {
-//			result = chunkify(num2, num1);
-//			System.out.println("chunk: "+result);
 			return chunkify(num2,num1);
 		}
 		else {
-
 			// base case
 			if(num1.length() == 1 && num2.length() == 1) {
 				return Integer.toString(Integer.parseInt(num1) * Integer.parseInt(num2));
@@ -134,7 +131,11 @@ public class Multiplication {
 			String res = sumTwoNums(ac, ad_plus_bc);
 			res = sumTwoNums(res, bd);
 
-			//return string without first leading zeros
+			/*
+			 * return string without first leading zeros
+			 * big thanks to polygenelubricants, who suggested this regex in this question:
+			 * https://stackoverflow.com/questions/2800739/how-to-remove-leading-zeros-from-alphanumeric-text
+			 */
 			return res.replaceFirst("^0+(?!$)", "");
 		}
 	}
@@ -149,10 +150,12 @@ public class Multiplication {
 	 * @return the result of multiplication of the two numbers
 	 */
 	public static String chunkify(String larger, String smaller) {
-//		System.out.println(larger +" ; " +smaller);
+
 		/*
 		 * this splits string into strings of length smaller.length() 
 		 * (the last string might be smaller, but that is going to be handled in the next recursion)
+		 * big thanks to Bart Kiers for providing this regex solution
+		 * https://stackoverflow.com/questions/2297347/splitting-a-string-at-every-n-th-character
 		 */
 		String str_chunks[] = larger.split("(?<=\\G.{"+smaller.length()+"})");
 		ArrayList<String> mul_chunks = new ArrayList<String>();
@@ -174,9 +177,7 @@ public class Multiplication {
 			temp += String.join("", Collections.nCopies(power, "0"));
 			
 			mul_chunks.add(temp);
-			
-			
-			
+
 		}
 		// sum all the partial products into one result
 		String result = sumTwoNums(mul_chunks.get(0),mul_chunks.get(1));
@@ -210,8 +211,7 @@ public class Multiplication {
 		
 		//set the number that gets transfered to the next summation
 		int transfer = 0;
-		
-		
+
 		//define an empty string
 		String str = "";
 		
