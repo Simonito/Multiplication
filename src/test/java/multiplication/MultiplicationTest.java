@@ -65,10 +65,4 @@ class MultiplicationTest {
 	void _minus146123_times_minus352120_shouldEqual_51452830760(){
 		assertEquals("51452830760", Multiplication.multiply("-146123", "-352120"));
 	}
-
-
-
-
-
-
 }
