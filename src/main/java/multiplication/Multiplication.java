@@ -1,12 +1,13 @@
 package multiplication;
 
+import java.util.ArrayList;
 import java.util.Collections;
 
 public class Multiplication {
 	
 	public static void main(String[] args) {
 		
-		System.out.println(multiply("146123", "352120"));
+		System.out.println(multiply("123", "10000"));
 		
 //		predicted : 51452830760
 //		calculated: 51452830760
@@ -68,58 +69,121 @@ public class Multiplication {
 	 * @return the multiplication of the two parameters
 	 */
 	public static String karatsuba(String num1, String num2) {
-		// base case
-		if(num1.length() == 1 || num2.length() == 1) {
-			return Integer.toString(Integer.parseInt(num1) * Integer.parseInt(num2));
-		}
 		
-		//calculate length of each number
-		int numOneLength = num1.length();
-		int numTwoLength = num2.length();
-
-		//find the longest number (in terms of number of digits)
-		int maxLength = Math.max(numOneLength, numTwoLength);
-
-		// substring point
-		int halfLengthString = maxLength / 2;
-
-		//store the half length
-		int halfLength = halfLengthString + (maxLength % 2);
-
-
-		// a => left part of num1
-		String a = num1.substring(0, halfLengthString);
-		// b => right part of num1
-		String b = num1.substring(halfLengthString, numOneLength);
-		// c => left part of num2
-		String c = num2.substring(0, halfLengthString);
-		// d => right part of num2
-		String d = num2.substring(halfLengthString, numTwoLength);
-
-
-		// a * c
-		String ac = karatsuba(a, c);
-
-		// b * d
-		String bd = karatsuba(b, d);
-
 		/*
-		 * the karatsuba algorithm in order to be efficient compared to classical multiplication
-		 * 	calculates K = [(a+b)*(c+d)] and from there calculate (a*d + b*c) as K - ac - bd
+		 * first we need to make sure we are applying karatsuba algorithm to equal sized 
+		 * (in terms of digit number) numbers - split the larger number if needed and perform 
+		 * separate karatsuba multiplication on these parts
+		*/
+		if(num1.length() > num2.length()) {
+//			result = chunkify(num1, num2);
+//			System.out.println("chunk: "+result);
+			return chunkify(num1, num2);
+			
+		}
+		else if(num2.length() > num1.length()) {
+//			result = chunkify(num2, num1);
+//			System.out.println("chunk: "+result);
+			return chunkify(num2,num1);
+		}
+		else {
+
+			// base case
+			if(num1.length() == 1 && num2.length() == 1) {
+				return Integer.toString(Integer.parseInt(num1) * Integer.parseInt(num2));
+			}
+
+			//calculate length the numbers -> they are the same length
+			int numLength = num1.length();
+
+			// substring point
+			int halfLengthString = numLength / 2;
+
+			//store the half length
+			int halfLength = halfLengthString + (numLength % 2);
+
+
+			// a => left part of num1
+			String a = num1.substring(0, halfLengthString);
+			// b => right part of num1
+			String b = num1.substring(halfLengthString, numLength);
+			// c => left part of num2
+			String c = num2.substring(0, halfLengthString);
+			// d => right part of num2
+			String d = num2.substring(halfLengthString, numLength);
+
+
+			// a * c
+			String ac = karatsuba(a, c);
+
+			// b * d
+			String bd = karatsuba(b, d);
+
+			/*
+			 * the karatsuba algorithm in order to be efficient compared to classical multiplication
+			 * 	calculates K = [(a+b)*(c+d)] and from there calculate (a*d + b*c) as K - ac - bd
+			 */
+			String aPb_times_cPd = karatsuba(sumTwoNums(a,b), sumTwoNums(c, d));
+
+			String ad_plus_bc = diffTwoNums(aPb_times_cPd, ac);
+			ad_plus_bc = diffTwoNums(ad_plus_bc, bd);
+
+			ac += String.join("", Collections.nCopies(2*halfLength, "0"));
+			ad_plus_bc += String.join("", Collections.nCopies(halfLength, "0"));
+
+			String res = sumTwoNums(ac, ad_plus_bc);
+			res = sumTwoNums(res, bd);
+
+			//return string without first leading zeros
+			return res.replaceFirst("^0+(?!$)", "");
+		}
+	}
+	
+	/**
+	 * This method is executed if there there is a multiplication of two number with different
+	 * number of digits. It splits the larger number into n/m chunks, each with m digits. 
+	 * Then the smaller number is multiplied by each chunk using Karatsuba’s algorithm, and then
+	 * the resulting partial products are summed with appropriate shifts.
+	 * @param larger number with larger number of digits
+	 * @param smaller number with smaller number of digits
+	 * @return the result of multiplication of the two numbers
+	 */
+	public static String chunkify(String larger, String smaller) {
+//		System.out.println(larger +" ; " +smaller);
+		/*
+		 * this splits string into strings of length smaller.length() 
+		 * (the last string might be smaller, but that is going to be handled in the next recursion)
 		 */
-		String aPb_times_cPd = karatsuba(sumTwoNums(a,b), sumTwoNums(c, d));
-
-		String ad_plus_bc = diffTwoNums(aPb_times_cPd, ac);
-		ad_plus_bc = diffTwoNums(ad_plus_bc, bd);
-
-		ac += String.join("", Collections.nCopies(2*halfLength, "0"));
-		ad_plus_bc += String.join("", Collections.nCopies(halfLength, "0"));
-
-		String res = sumTwoNums(ac, ad_plus_bc);
-		res = sumTwoNums(res, bd);
-
-		//return string without first leading zeros
-		return res.replaceFirst("^0+(?!$)", "");
+		String str_chunks[] = larger.split("(?<=\\G.{"+smaller.length()+"})");
+		ArrayList<String> mul_chunks = new ArrayList<String>();
+		
+		
+		//this variable keeps track of the powers so that we can than build back the number
+		int power = larger.length();
+		for(int i=0; i<str_chunks.length; i++) {
+			
+			power -= smaller.length();
+			if(power < 0) power = 0;
+			
+			
+			String temp = karatsuba(str_chunks[i], smaller);
+			/*
+			 * here we are adding the zeros based on the power variable
+			 * num1 * 10^power -> n=power:  num1 with n zeros
+			 */
+			temp += String.join("", Collections.nCopies(power, "0"));
+			
+			mul_chunks.add(temp);
+			
+			
+			
+		}
+		// sum all the partial products into one result
+		String result = sumTwoNums(mul_chunks.get(0),mul_chunks.get(1));
+		for(int i=2; i<mul_chunks.size(); i++) {
+			result = sumTwoNums(mul_chunks.get(i), result);
+		}
+		return result;
 	}
 	
 	/**
