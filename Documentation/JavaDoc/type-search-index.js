@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"multiplication","l":"Main"},{"p":"multiplication","l":"Multiplication"},{"p":"multiplication","l":"MultiplicationBigIntegers"},{"p":"multiplication","l":"NonNumericalValueException"}];updateSearchResults();
