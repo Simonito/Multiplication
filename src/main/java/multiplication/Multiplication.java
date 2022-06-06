@@ -5,13 +5,13 @@ import java.util.Collections;
 
 public class Multiplication {
 	
-	public static void main(String[] args) {
-		
-		System.out.println(multiply("123", "10000"));
-		
-//		predicted : 51452830760
-//		calculated: 51452830760
-	}
+//	public static void main(String[] args) {
+//		
+//		System.out.println(multiply("123", "10000"));
+//		
+////		predicted : 51452830760
+////		calculated: 51452830760
+//	}
 	
 	public static String multiply(String num1, String num2) {
 		try{
